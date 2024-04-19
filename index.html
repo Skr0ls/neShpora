@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>
+        Камера привязывается к Camera, суем в него игрока.
+    </h2>
+
+    <h3>CameraFollow</h3>
+    <textarea id="CameraFollowCode" rows="20" cols="50">
+        using System.Collections;
+        using System.Collections.Generic;
+        using UnityEngine;
+        
+        public class CameraFollow : MonoBehaviour
+        {
+        
+            public Transform followTransform;
+        
+        
+            // Update is called once per frame
+            void FixedUpdate()
+            {
+                this.transform.position = new Vector3(followTransform.position.x, followTransform.position.y, this.transform.position.z);
+            }
+        }    
+    </textarea>
+    <button onclick="copyCode('CameraFollowCode')">Копировать код</button>
+
+    <br>
+    <h2>
+        PlayerController привязываем к Player
+        <br>
+        Объект Player привзяываем к кнопкам управления.
+    </h2>
+    <h3>PlayerController</h3>
+    <textarea id="PlayerControllerCode" rows="20" cols="50">
+        using UnityEngine;
+
+        public class PlayerController : MonoBehaviour
+        {
+            public float speed = 5f; // Скорость персонажа
+        
+            private bool moveLeft = false;
+            private bool moveRight = false;
+            private bool moveUp = false;
+            private bool moveDown = false;
+        
+            void Start()
+            {
+                // Находим кнопки и подписываемся на их события
+                GameObject leftButton = GameObject.Find("LeftButton");
+                ButtonInputHandler leftButtonHandler = leftButton.GetComponent<ButtonInputHandler>();
+                leftButtonHandler.OnButtonDown += () => moveLeft = true;
+                leftButtonHandler.OnButtonUp += () => moveLeft = false;
+        
+                
+                GameObject rightButton = GameObject.Find("RightButton");
+                ButtonInputHandler rightButtonHandler = rightButton.GetComponent<ButtonInputHandler>();
+                rightButtonHandler.OnButtonDown += () => moveRight = true;
+                rightButtonHandler.OnButtonUp += () => moveRight = false;
+        
+                GameObject upButton = GameObject.Find("UpButton");
+                ButtonInputHandler upButtonHandler = upButton.GetComponent<ButtonInputHandler>();
+                upButtonHandler.OnButtonDown += () => moveUp = true;
+                upButtonHandler.OnButtonUp += () => moveUp = false;
+        
+                GameObject downButton = GameObject.Find("DownButton");
+                ButtonInputHandler downButtonHandler = downButton.GetComponent<ButtonInputHandler>();
+                downButtonHandler.OnButtonDown += () => moveDown = true;
+                downButtonHandler.OnButtonUp += () => moveDown = false;
+            }
+        
+            void Update()
+            {
+                // Перемещение персонажа в зависимости от состояния флагов
+                Vector2 movementInput = new Vector2();
+        
+                if (moveLeft)
+                {
+                    movementInput.x = -1f;
+                }
+                else if (moveRight)
+                {
+                    movementInput.x = 1f;
+                }
+        
+                if (moveUp)
+                {
+                    movementInput.y = 1f;
+                }
+                else if (moveDown)
+                {
+                    movementInput.y = -1f;
+                }
+        
+                // Применяем движение к персонажу
+                transform.Translate(movementInput * speed * Time.deltaTime);
+            }
+        }
+        
+    </textarea>
+    <button onclick="copyCode('PlayerControllerCode')">Копировать код</button>
+    <br>
+
+    <h2>
+        ButtonInputHandler привязываем к кнопкам UI.
+    </h2>
+    <h3>ButtonInputHandler</h3>
+    <textarea id="ButtonInputHandlerCode" rows="20" cols="50">
+        using UnityEngine;
+        using UnityEngine.EventSystems;
+        
+        public class ButtonInputHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+        {
+            public delegate void ButtonAction();
+            public event ButtonAction OnButtonDown;
+            public event ButtonAction OnButtonUp;
+        
+            public void OnPointerDown(PointerEventData eventData)
+            {
+                OnButtonDown?.Invoke();
+            }
+        
+            public void OnPointerUp(PointerEventData eventData)
+            {
+                OnButtonUp?.Invoke();
+            }
+        }
+    </textarea>
+    <button onclick="copyCode('ButtonInputHandlerCode')">Копировать код</button>
+    <br>
+    <h2>TraderMenu привязываем к объекту торговца</h2>
+    <h3>TraderMenu</h3>
+    <textarea id="TraderMenuCode" rows="20" cols="50">
+        using UnityEngine;
+        using UnityEngine.UI;
+        
+        public class TraderMenu : MonoBehaviour
+        {
+            public GameObject traderMenuUI; // Ссылка на объект меню торговца
+            public Text itemNameText; // Текстовое поле для отображения названия товара
+            public Text itemPriceText; // Текстовое поле для отображения цены товара
+        
+            private bool isMenuActive = false; // Флаг, указывающий, активно ли меню в данный момент
+        
+            // Открытие меню торговца
+            public void OpenTraderMenu(string itemName, int itemPrice)
+            {
+                //itemNameText.text = itemName;
+                //itemPriceText.text = itemPrice.ToString();
+        
+                traderMenuUI.SetActive(true);
+                isMenuActive = true;
+            }
+        
+            // Закрытие меню торговца
+            public void CloseTraderMenu()
+            {
+                traderMenuUI.SetActive(false);
+                isMenuActive = false;
+            }
+        
+            // Покупка товара
+            public void BuyItem()
+            {
+                // Добавьте здесь логику покупки товара
+                Debug.Log("Покупка товара!");
+            }
+        
+            // Продажа товара
+            public void SellItem()
+            {
+                // Добавьте здесь логику продажи товара
+                Debug.Log("Продажа товара!");
+            }
+        
+            // Метод для проверки, активно ли в данный момент меню торговца
+            public bool IsMenuActive()
+            {
+                return isMenuActive;
+            }
+        
+            // Метод, вызываемый при нажатии на кнопку закрытия меню
+            public void CloseMenuButtonClicked()
+            {
+                CloseTraderMenu();
+            }
+        }
+    </textarea>
+    <button onclick="copyCode('TraderMenuCode')">Копировать код</button>
+    <br>
+    <h3>
+        TraderDistanceChecker привзяываем к игроку, в него передаем торговца и игрока.
+    </h3>
+    <h2>TraderDistanceChecker</h2>
+    <textarea id="TraderDistanceCheckerCode" rows="20" cols="50">
+        using UnityEngine;
+
+        public class TraderDistanceChecker : MonoBehaviour
+        {
+            public Transform player; // Ссылка на трансформ игрока
+            public Transform trader; // Ссылка на трансформ торговца
+        
+            public float interactionDistance = 3f; // Расстояние для взаимодействия с торговцем
+        
+            public GameObject interactionButton; // Ссылка на объект кнопки взаимодействия
+        
+            private void Update()
+            {
+                // Вычисляем расстояние между игроком и торговцем
+                float distance = Vector3.Distance(player.position, trader.position);
+        
+                // Проверяем, находится ли игрок в зоне взаимодействия с торговцем
+                if (distance <= interactionDistance)
+                {
+                    // Если игрок находится в зоне взаимодействия, активируем кнопку взаимодействия
+                    interactionButton.SetActive(true);
+                }
+                else
+                {
+                    // Если игрок не находится в зоне взаимодействия, деактивируем кнопку взаимодействия
+                    interactionButton.SetActive(false);
+                }
+            }
+        }
+    </textarea>
+    <button onclick="copyCode('TraderDistanceCheckerCode')">Копировать код</button>
+    <br>
+    <h3>TraderInteraction привзяываем к кнопке открытия меню торговца, в него передаем UI торговца</h3>
+    <h2>TraderInteraction</h2>
+
+    <textarea id="TraderInteractionCode" rows="20" cols="50">
+        using UnityEngine;
+
+        public class TraderInteraction : MonoBehaviour
+        {
+            public TraderMenu traderMenu; // Ссылка на скрипт меню торговца
+        
+            public string _name = "test";
+            public int price = 900;
+        
+            // Метод для обработки нажатия кнопки взаимодействия
+            public void InteractWithTrader()
+            {
+                // Проверяем, что скрипт меню торговца был прикреплен
+                if (traderMenu != null)
+                {
+                    // Вызываем метод открытия меню торговца из ссылки на скрипт
+                    traderMenu.OpenTraderMenu(_name, price);
+                }
+                else
+                {
+                    Debug.LogWarning("Trader menu script is not assigned!");
+                }
+            }
+        }
+    </textarea>
+    <button onclick="copyCode('TraderInteractionCode')">Копировать код</button>
+
+    <script>
+        function copyCode(id) {
+            var codeTextarea = document.getElementById(id);
+            codeTextarea.select();
+            document.execCommand("copy");
+            alert("Код скопирован!");
+        }
+    </script>
+</body>
+</html>
