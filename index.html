@@ -264,7 +264,7 @@
 
     <script>
         function copyCode(id) {
-            var codeTextarea = document.getElementById(id);
+            let codeTextarea = document.getElementById(id);
             codeTextarea.select();
             document.execCommand("copy");
             alert("Код скопирован!");
